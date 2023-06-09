@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AddTask extends StatefulWidget {
   const AddTask({super.key});
@@ -31,6 +32,7 @@ class _AddTaskState extends State<AddTask> {
       'task': taskController,
       'time': time.toString(),
     });
+    Fluttertoast.showToast(msg: 'Task Added!!');
   }
 
   @override
@@ -81,7 +83,9 @@ class _AddTaskState extends State<AddTask> {
                       'Add Task',
                       // style: GoogleFonts.roboto(fontSize: 18),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      addTaskToFirebase();
+                    },
                   ),
                 )
               ],
