@@ -82,7 +82,7 @@ class _RegisterViewState extends State<RegisterView> {
 
               // if username field is empty
               if (username.isEmpty) {
-                await showErrorDialogue(context, 'Enter your username');
+                await showErrorDialogue(context, 'Enter Username');
                 return;
               }
               try {

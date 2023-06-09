@@ -66,6 +66,7 @@ class ToDoViewState extends State<ToDoView> {
 }
 
 Future<bool> showLogOutDialogue(BuildContext context) {
+  
   return showDialog<bool>(
     context: context,
     builder: (context) {

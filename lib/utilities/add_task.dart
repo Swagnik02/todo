@@ -1,3 +1,8 @@
+// ignore_for_file: avoid_unnecessary_containers, sized_box_for_whitespace
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -10,6 +15,24 @@ class AddTask extends StatefulWidget {
 }
 
 class _AddTaskState extends State<AddTask> {
+  TextEditingController titleController = TextEditingController();
+  TextEditingController taskController = TextEditingController();
+
+  addTaskToFirebase() async {
+    final user = FirebaseAuth.instance.currentUser;
+    var time = DateTime.now();
+    await FirebaseFirestore.instance
+        .collection('task')
+        .doc(user?.uid)
+        .collection('myTasks')
+        .doc(time.toString())
+        .set({
+      'title': titleController,
+      'task': taskController,
+      'time': time.toString(),
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,18 +44,22 @@ class _AddTaskState extends State<AddTask> {
             child: Column(
               children: [
                 Container(
-                  child: const TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Enter Title',
+                  child: TextField(
+                    controller: titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Title',
+                      hintText: 'Enter the title',
                       border: OutlineInputBorder(),
                     ),
                   ),
                 ),
                 const SizedBox(height: 10),
                 Container(
-                  child: const TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Enter Description',
+                  child: TextField(
+                    controller: taskController,
+                    decoration: const InputDecoration(
+                      labelText: 'Task',
+                      hintText: 'Describe',
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -46,7 +73,7 @@ class _AddTaskState extends State<AddTask> {
                         MaterialStateProperty.resolveWith<Color>(
                             (Set<MaterialState> states) {
                       if (states.contains(MaterialState.pressed)) {
-                        return Color.fromARGB(255, 32, 132, 37);
+                        return const Color.fromARGB(255, 32, 132, 37);
                       }
                       return Theme.of(context).primaryColor;
                     })),
