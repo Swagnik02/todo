@@ -6,7 +6,7 @@ import 'package:todo/utilities/add_task.dart';
 import 'package:todo/views/login_view.dart';
 import 'package:todo/views/register_view.dart';
 import 'package:todo/views/verify_email_view.dart';
-import 'package:todo/views/list_view.dart';
+import 'package:todo/views/toDo_view.dart';
 import 'firebase_options.dart';
 
 void main() {
