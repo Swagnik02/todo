@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/constants/routes.dart';
-
+import 'package:todo/utilities/add_task.dart';
 
 enum MenuAction { logout }
 
@@ -17,7 +17,7 @@ class ToDoViewState extends State<ToDoView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Main UI'),
+        title: const Text('TODO List'),
         actions: [
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
@@ -42,7 +42,25 @@ class ToDoViewState extends State<ToDoView> {
           )
         ],
       ),
-      body: const Text('Hello World'),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        color: Colors.red,
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddTask(),
+            ),
+          );
+        },
+      ),
     );
   }
 }
