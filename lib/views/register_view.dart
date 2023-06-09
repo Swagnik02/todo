@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
@@ -17,11 +19,13 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
+  late final TextEditingController _username;
   late final TextEditingController _email;
   late final TextEditingController _password;
 
   @override
   void initState() {
+    _username = TextEditingController();
     _email = TextEditingController();
     _password = TextEditingController();
     super.initState();
@@ -29,6 +33,7 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   void dispose() {
+    _username.dispose();
     _email.dispose();
     _password.dispose();
     super.dispose();
@@ -42,6 +47,15 @@ class _RegisterViewState extends State<RegisterView> {
       ),
       body: Column(
         children: [
+          TextField(
+            controller: _username,
+            enableSuggestions: true,
+            autocorrect: true,
+            keyboardType: TextInputType.name,
+            decoration: const InputDecoration(
+              hintText: 'Enter your name',
+            ),
+          ),
           TextField(
             controller: _email,
             enableSuggestions: false,
@@ -62,8 +76,15 @@ class _RegisterViewState extends State<RegisterView> {
           ),
           TextButton(
             onPressed: () async {
+              final username = _username.text;
               final email = _email.text;
               final password = _password.text;
+
+              // if username field is empty
+              if (username.isEmpty) {
+                await showErrorDialogue(context, 'Enter your username');
+                return;
+              }
               try {
                 final userCredential =
                     await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -71,8 +92,18 @@ class _RegisterViewState extends State<RegisterView> {
                   password: password,
                 );
                 devtools.log(userCredential.toString());
-                final user = FirebaseAuth.instance.currentUser;
-                await user?.sendEmailVerification();
+                final userLoggedIn = FirebaseAuth.instance.currentUser;
+                await userLoggedIn?.sendEmailVerification();
+
+                // creating database in firestore
+                await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(userCredential.user?.uid)
+                    .set({
+                  'username': username,
+                  'email': email,
+                });
+
                 Navigator.of(context).pushNamed(verifyEmailRoute);
               } on FirebaseAuthException catch (e) {
                 if (email.isEmpty && password.isEmpty) {
