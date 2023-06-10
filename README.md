@@ -13,7 +13,13 @@ To run the project and understand its functionality, please follow the instructi
 
 ## Demo Screens
 
-To get an overview of the application screens and its functionality, please refer to the following screenshots:
+## Video Clip
+
+To have a more interactive view of the application and its functionality, please watch the video clip showcasing the ToDoList Application screens:
+
+[ToDoList Application Video Clip](https://github.com/Swagnik02/todo/assets/91018814/a2a8204d-d2ae-40ad-811c-505f52067e62)
+
+To get an overview of the database screens and its functionality, please refer to the following screenshots:
 
 ![Screenshot 1](https://github.com/Swagnik02/todo/assets/91018814/5ef86c9f-bdf5-48fd-9366-99ee2f72c84b)
 ![Screenshot 2](https://github.com/Swagnik02/todo/assets/91018814/4b05c645-a8b8-4725-9e01-f62122a7fb96)
