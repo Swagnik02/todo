@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:developer' as devtools show log;
 import 'package:todo/constants/routes.dart';
 import '../utilities/show_error_dialogue.dart';
@@ -83,9 +84,9 @@ class _LoginViewState extends State<LoginView> {
                   }
                   return Theme.of(context).primaryColor;
                 })),
-                child: const Text(
+                child: Text(
                   'Login',
-                  // style: GoogleFonts.roboto(fontSize: 18),
+                  style: GoogleFonts.roboto(fontSize: 18),
                 ),
                 onPressed: () async {
                   final email = _email.text;
