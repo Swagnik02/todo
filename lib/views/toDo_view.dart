@@ -22,6 +22,7 @@ class ToDoView extends StatefulWidget {
 
 class _ToDoViewState extends State<ToDoView> {
   String? userId = '';
+  String? searchQuery = '';
 
   @override
   void initState() {
@@ -34,6 +35,28 @@ class _ToDoViewState extends State<ToDoView> {
     setState(() {
       userId = user?.uid;
     });
+  }
+
+  void updateSearchQuery(String query) {
+    setState(() {
+      searchQuery = query;
+    });
+  }
+
+  Stream<QuerySnapshot>? getTaskStream() {
+    CollectionReference? taskCollection = FirebaseFirestore.instance
+        .collection('task')
+        .doc(userId)
+        .collection('myTasks');
+
+    if (searchQuery != null && searchQuery!.isNotEmpty) {
+      // Apply search filter
+      taskCollection = taskCollection.where('title',
+              isGreaterThanOrEqualTo: searchQuery!.toLowerCase())
+          as CollectionReference<Object?>?;
+    }
+
+    return taskCollection?.snapshots();
   }
 
   @override
@@ -72,143 +95,156 @@ class _ToDoViewState extends State<ToDoView> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         color: Colors.purple.shade100,
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('task')
-              .doc(userId)
-              .collection('myTasks')
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              final docs = snapshot.data?.docs
-                  .map((doc) => _TaskItem(
-                        title: doc['title'],
-                        task: doc['task'],
-                        timestamp: (doc['timestamp'] as Timestamp).toDate(),
-                        taskId: doc.id,
-                        isChecked: doc['isChecked'] ?? false,
-                      ))
-                  .toList();
-              return SingleChildScrollView(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: docs?.length,
-                  itemBuilder: (context, index) {
-                    final task = docs?[index];
-                    return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ShowTask(
-                              title: task?.title ?? '',
-                              details: task?.task ?? '',
-                              taskId: task?.taskId ?? '',
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: updateSearchQuery,
+                decoration: InputDecoration(
+                  hintText: 'Search tasks...',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: getTaskStream(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    final docs = snapshot.data?.docs
+                        .map((doc) => _TaskItem(
+                              title: doc['title'],
+                              task: doc['task'],
+                              timestamp:
+                                  (doc['timestamp'] as Timestamp).toDate(),
+                              taskId: doc.id,
+                              isChecked: doc['isChecked'] ?? false,
+                            ))
+                        .toList();
+                    return ListView.builder(
+                      itemCount: docs?.length,
+                      itemBuilder: (context, index) {
+                        final task = docs?[index];
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ShowTask(
+                                  title: task?.title ?? '',
+                                  details: task?.task ?? '',
+                                  taskId: task?.taskId ?? '',
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.purple.shade400,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            height: 90,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(left: 20),
+                                      child: Text(
+                                        task?.title ?? '',
+                                        style: GoogleFonts.roboto(
+                                          fontSize: 18,
+                                          color: Colors.purple.shade100,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(left: 20),
+                                      child: Text(
+                                        DateFormat.yMd().add_jm().format(
+                                            task?.timestamp ?? DateTime.now()),
+                                        style: GoogleFonts.roboto(
+                                          fontSize: 18,
+                                          color: Colors.purple.shade100,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Container(
+                                  child: Theme(
+                                    data: Theme.of(context).copyWith(
+                                      unselectedWidgetColor:
+                                          Colors.purple.shade100,
+                                    ),
+                                    child: Checkbox(
+                                      value: task?.isChecked ?? false,
+                                      onChanged: (bool? newValue) async {
+                                        setState(() {
+                                          task?.isChecked = newValue ?? false;
+                                        });
+
+                                        final user =
+                                            FirebaseAuth.instance.currentUser;
+                                        await FirebaseFirestore.instance
+                                            .collection('task')
+                                            .doc(user?.uid)
+                                            .collection('myTasks')
+                                            .doc(task?.taskId)
+                                            .update({
+                                          'isChecked': task?.isChecked,
+                                        });
+
+                                        // Show a toast message or perform any other action
+                                      },
+                                      checkColor: Colors.white,
+                                      activeColor: Colors.purple.shade300,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: Colors.purple.shade100,
+                                    ),
+                                    onPressed: () async {
+                                      FirebaseFirestore.instance
+                                          .collection('task')
+                                          .doc(userId)
+                                          .collection('myTasks')
+                                          .doc(task?.taskId ??
+                                              '') // Use the unique ID to delete the document
+                                          .delete();
+                                    },
+                                  ),
+                                )
+                              ],
                             ),
                           ),
                         );
                       },
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.purple.shade400,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        height: 90,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.only(left: 20),
-                                  child: Text(
-                                    task?.title ?? '',
-                                    style: GoogleFonts.roboto(
-                                      fontSize: 18,
-                                      color: Colors.purple.shade100,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(left: 20),
-                                  child: Text(
-                                    DateFormat.yMd().add_jm().format(
-                                        task?.timestamp ?? DateTime.now()),
-                                    style: GoogleFonts.roboto(
-                                      fontSize: 18,
-                                      color: Colors.purple.shade100,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              child: Theme(
-                                data: Theme.of(context).copyWith(
-                                  unselectedWidgetColor: Colors.purple.shade100,
-                                ),
-                                child: Checkbox(
-                                  value: task?.isChecked ?? false,
-                                  onChanged: (bool? newValue) async {
-                                    setState(() {
-                                      task?.isChecked = newValue ?? false;
-                                    });
-
-                                    final user =
-                                        FirebaseAuth.instance.currentUser;
-                                    await FirebaseFirestore.instance
-                                        .collection('task')
-                                        .doc(user?.uid)
-                                        .collection('myTasks')
-                                        .doc(task?.taskId)
-                                        .update({
-                                      'isChecked': task?.isChecked,
-                                    });
-
-                                    // Show a toast message or perform any other action
-                                  },
-                                  checkColor: Colors.white,
-                                  activeColor: Colors.purple.shade300,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.purple.shade100,
-                                ),
-                                onPressed: () async {
-                                  FirebaseFirestore.instance
-                                      .collection('task')
-                                      .doc(userId)
-                                      .collection('myTasks')
-                                      .doc(task?.taskId ??
-                                          '') // Use the unique ID to delete the document
-                                      .delete();
-                                },
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
                     );
-                  },
-                ),
-              );
-            }
-          },
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
