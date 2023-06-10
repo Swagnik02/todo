@@ -38,105 +38,116 @@ class _LoginViewState extends State<LoginView> {
       appBar: AppBar(
         title: const Text('Login'),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(10),
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            TextField(
-              controller: _email,
-              enableSuggestions: false,
-              autocorrect: false,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                hintText: 'Enter your email here',
-                labelText: 'Email Id',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _password,
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                hintText: 'Enter your password here',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
             Container(
-              padding: const EdgeInsets.only(
-                top: 5,
-                bottom: 5,
-                left: 40,
-                right: 40,
-              ),
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ButtonStyle(backgroundColor:
-                    MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.pressed)) {
-                    return const Color.fromARGB(255, 32, 132, 37);
-                  }
-                  return Theme.of(context).primaryColor;
-                })),
-                child: Text(
-                  'Login',
-                  style: GoogleFonts.roboto(fontSize: 18),
-                ),
-                onPressed: () async {
-                  final email = _email.text;
-                  final password = _password.text;
+              // padding: const EdgeInsets.all(10),
+              child: Image.asset('assets/to-do-list-apps.png'),
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _email,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter your email here',
+                      labelText: 'Email Id',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: _password,
+                    obscureText: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      hintText: 'Enter your password here',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.only(
+                      top: 5,
+                      bottom: 5,
+                      left: 40,
+                      right: 40,
+                    ),
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ButtonStyle(backgroundColor:
+                          MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.pressed)) {
+                          return const Color.fromARGB(255, 32, 132, 37);
+                        }
+                        return Theme.of(context).primaryColor;
+                      })),
+                      child: Text(
+                        'Login',
+                        style: GoogleFonts.roboto(fontSize: 18),
+                      ),
+                      onPressed: () async {
+                        final email = _email.text;
+                        final password = _password.text;
 
-                  try {
-                    final userCredential =
-                        await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: email,
-                      password: password,
-                    );
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      toDoRoute,
-                      (route) => false,
-                    );
-                    devtools.log(userCredential.toString());
-                  } on FirebaseAuthException catch (e) {
-                    if (e.code == 'user-not-found') {
-                      await showErrorDialogue(
-                        context,
-                        'User Not Found',
-                      );
-                    } else if (e.code == 'wrong-password') {
-                      await showErrorDialogue(
-                        context,
-                        'Wrong Credentials',
-                      );
-                    } else {
-                      await showErrorDialogue(
-                        context,
-                        'Error: ${e.code}',
-                      );
-                    }
-                  } catch (e) {
-                    await showErrorDialogue(
-                      context,
-                      e.toString(),
-                    );
-                  }
-                },
+                        try {
+                          final userCredential = await FirebaseAuth.instance
+                              .signInWithEmailAndPassword(
+                            email: email,
+                            password: password,
+                          );
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            toDoRoute,
+                            (route) => false,
+                          );
+                          devtools.log(userCredential.toString());
+                        } on FirebaseAuthException catch (e) {
+                          if (e.code == 'user-not-found') {
+                            await showErrorDialogue(
+                              context,
+                              'User Not Found',
+                            );
+                          } else if (e.code == 'wrong-password') {
+                            await showErrorDialogue(
+                              context,
+                              'Wrong Credentials',
+                            );
+                          } else {
+                            await showErrorDialogue(
+                              context,
+                              'Error: ${e.code}',
+                            );
+                          }
+                        } catch (e) {
+                          await showErrorDialogue(
+                            context,
+                            e.toString(),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          registerRoute,
+                          (route) => false,
+                        );
+                      },
+                      child: const Text('Not registered yet ? Register Here!'))
+                ],
               ),
             ),
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    registerRoute,
-                    (route) => false,
-                  );
-                },
-                child: const Text('Not registered yet ? Register Here!'))
           ],
         ),
       ),
