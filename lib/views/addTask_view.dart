@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class AddTask extends StatefulWidget {
-  const AddTask({super.key});
+  const AddTask({Key? key}) : super(key: key);
 
   @override
   State<AddTask> createState() => _AddTaskState();
@@ -16,7 +16,7 @@ class _AddTaskState extends State<AddTask> {
   TextEditingController titleController = TextEditingController();
   TextEditingController taskController = TextEditingController();
 
-  addTaskToFirebase() async {
+  void addTaskToFirebase() async {
     final user = FirebaseAuth.instance.currentUser;
 
     // Generate a unique ID for the document
@@ -32,11 +32,12 @@ class _AddTaskState extends State<AddTask> {
       'taskID': taskID,
       'title': titleController.text,
       'task': taskController.text,
-      'time': docRef.id,
       'timestamp': time,
+      'isChecked': false, // Add isChecked field with default value
     });
 
     Fluttertoast.showToast(msg: 'Task Added!!');
+    Navigator.pop(context); // Close the AddTask screen after adding the task
   }
 
   @override
@@ -71,17 +72,18 @@ class _AddTaskState extends State<AddTask> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                style: ButtonStyle(backgroundColor:
-                    MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.pressed)) {
-                    return const Color.fromARGB(255, 216, 98, 255);
-                  }
-                  return Theme.of(context).primaryColor;
-                })),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.pressed)) {
+                        return const Color.fromARGB(255, 216, 98, 255);
+                      }
+                      return Theme.of(context).primaryColor;
+                    },
+                  ),
+                ),
                 child: const Text(
                   'Add Task',
-                  // style: GoogleFonts.roboto(fontSize: 18),
                 ),
                 onPressed: () {
                   addTaskToFirebase();

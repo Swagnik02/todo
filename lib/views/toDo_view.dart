@@ -84,21 +84,28 @@ class _ToDoViewState extends State<ToDoView> {
                 child: CircularProgressIndicator(),
               );
             } else {
-              final docs = snapshot.data?.docs;
+              final docs = snapshot.data?.docs
+                  .map((doc) => _TaskItem(
+                        title: doc['title'],
+                        task: doc['task'],
+                        timestamp: (doc['timestamp'] as Timestamp).toDate(),
+                        taskId: doc.id,
+                        isChecked: doc['isChecked'] ?? false,
+                      ))
+                  .toList();
               return ListView.builder(
                 itemCount: docs?.length,
                 itemBuilder: (context, index) {
-                  var time = (docs?[index]['timestamp'] as Timestamp).toDate();
-                  var taskId = docs?[index].id; // Unique ID of the document
+                  final task = docs?[index];
                   return InkWell(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ShowTask(
-                            title: docs?[index]['title'],
-                            details: docs?[index]['task'],
-                            taskId: docs?[index]['taskID'],
+                            title: task?.title ?? '',
+                            details: task?.task ?? '',
+                            taskId: task?.taskId ?? '',
                           ),
                         ),
                       );
@@ -120,7 +127,7 @@ class _ToDoViewState extends State<ToDoView> {
                               Container(
                                 margin: const EdgeInsets.only(left: 20),
                                 child: Text(
-                                  docs?[index]['title'],
+                                  task?.title ?? '',
                                   style: GoogleFonts.roboto(
                                     fontSize: 18,
                                     color: Colors.purple.shade100,
@@ -133,7 +140,8 @@ class _ToDoViewState extends State<ToDoView> {
                               Container(
                                 margin: const EdgeInsets.only(left: 20),
                                 child: Text(
-                                  DateFormat.yMd().add_jm().format(time),
+                                  DateFormat.yMd().add_jm().format(
+                                      task?.timestamp ?? DateTime.now()),
                                   style: GoogleFonts.roboto(
                                     fontSize: 18,
                                     color: Colors.purple.shade100,
@@ -148,10 +156,24 @@ class _ToDoViewState extends State<ToDoView> {
                                 unselectedWidgetColor: Colors.purple.shade100,
                               ),
                               child: Checkbox(
-                                value:
-                                    false, // Replace with your checkbox value
-                                onChanged: (bool? newValue) {
-                                  // Handle checkbox value change
+                                value: task?.isChecked ?? false,
+                                onChanged: (bool? newValue) async {
+                                  setState(() {
+                                    task?.isChecked = newValue ?? false;
+                                  });
+
+                                  final user =
+                                      FirebaseAuth.instance.currentUser;
+                                  await FirebaseFirestore.instance
+                                      .collection('task')
+                                      .doc(user?.uid)
+                                      .collection('myTasks')
+                                      .doc(task?.taskId)
+                                      .update({
+                                    'isChecked': task?.isChecked,
+                                  });
+
+                                  // Show a toast message or perform any other action
                                 },
                                 checkColor: Colors.white,
                                 activeColor: Colors.purple.shade300,
@@ -169,8 +191,8 @@ class _ToDoViewState extends State<ToDoView> {
                                     .collection('task')
                                     .doc(userId)
                                     .collection('myTasks')
-                                    .doc(
-                                        taskId) // Use the unique ID to delete the document
+                                    .doc(task?.taskId ??
+                                        '') // Use the unique ID to delete the document
                                     .delete();
                               },
                             ),
@@ -201,4 +223,20 @@ class _ToDoViewState extends State<ToDoView> {
       ),
     );
   }
+}
+
+class _TaskItem {
+  final String title;
+  final String task;
+  final DateTime timestamp;
+  final String taskId;
+  bool isChecked;
+
+  _TaskItem({
+    required this.title,
+    required this.task,
+    required this.timestamp,
+    required this.taskId,
+    required this.isChecked,
+  });
 }
