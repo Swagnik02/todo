@@ -75,7 +75,7 @@ class _AddTaskState extends State<AddTask> {
                     MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                   if (states.contains(MaterialState.pressed)) {
-                    return Color.fromARGB(255, 216, 98, 255);
+                    return const Color.fromARGB(255, 216, 98, 255);
                   }
                   return Theme.of(context).primaryColor;
                 })),
