@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:todo/constants/routes.dart';
 import 'package:todo/utilities/add_task.dart';
 
@@ -91,48 +92,70 @@ class _ToDoViewState extends State<ToDoView> {
               return ListView.builder(
                 itemCount: docs?.length,
                 itemBuilder: (context, index) {
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    height: 90,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(left: 20),
-                              child: Text(
-                                docs![index]['title'],
-                                style: GoogleFonts.roboto(
-                                  fontSize: 18,
+                  var time = (docs?[index]['timestamp'] as Timestamp).toDate();
+
+                  return InkWell(
+                    onTap: () {
+
+
+
+                      
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      height: 90,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(left: 20),
+                                child: Text(
+                                  docs?[index]['title'],
+                                  style: GoogleFonts.roboto(
+                                    fontSize: 18,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.delete,
-                              // color: Colors.white,
-                            ),
-                            onPressed: () async {
-                              FirebaseFirestore.instance
-                                  .collection('task')
-                                  .doc(userId)
-                                  .collection('myTasks')
-                                  .doc(docs[index]['time'])
-                                  .delete();
-                            },
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(left: 20),
+                                child: Text(
+                                  DateFormat.yMd().add_jm().format(time),
+                                  style: GoogleFonts.roboto(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        )
-                      ],
+                          Container(
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.delete,
+                                // color: Colors.white,
+                              ),
+                              onPressed: () async {
+                                FirebaseFirestore.instance
+                                    .collection('task')
+                                    .doc(userId)
+                                    .collection('myTasks')
+                                    .doc(docs?[index]['time'])
+                                    .delete();
+                              },
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   );
                 },
