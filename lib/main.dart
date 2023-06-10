@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/constants/routes.dart';
-import 'package:todo/utilities/add_task.dart';
+import 'package:todo/views/addTask_view.dart';
 import 'package:todo/views/login_view.dart';
 import 'package:todo/views/register_view.dart';
 import 'package:todo/views/verify_email_view.dart';

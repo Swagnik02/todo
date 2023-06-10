@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:todo/constants/routes.dart';
-import 'package:todo/utilities/add_task.dart';
-import 'package:todo/utilities/show_task.dart';
+import 'package:todo/views/addTask_view.dart';
+import 'package:todo/views/showTask_view.dart';
 
 import '../utilities/logout_dialogue.dart.dart';
 
