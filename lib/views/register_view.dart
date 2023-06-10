@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, avoid_unnecessary_containers
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -106,7 +106,7 @@ class _RegisterViewState extends State<RegisterView> {
                           MaterialStateProperty.resolveWith<Color>(
                               (Set<MaterialState> states) {
                         if (states.contains(MaterialState.pressed)) {
-                          return const Color.fromARGB(255, 32, 132, 37);
+                          return const Color.fromARGB(255, 216, 98, 255);
                         }
                         return Theme.of(context).primaryColor;
                       })),

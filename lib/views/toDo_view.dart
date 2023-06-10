@@ -72,7 +72,7 @@ class _ToDoViewState extends State<ToDoView> {
         padding: const EdgeInsets.all(10),
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        // color: Colors.red,
+        color: Colors.purple.shade100,
         child: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('task')
@@ -90,7 +90,6 @@ class _ToDoViewState extends State<ToDoView> {
                 itemCount: docs?.length,
                 itemBuilder: (context, index) {
                   var time = (docs?[index]['timestamp'] as Timestamp).toDate();
-
                   return InkWell(
                     onTap: () {
                       Navigator.push(
@@ -106,7 +105,7 @@ class _ToDoViewState extends State<ToDoView> {
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
-                        color: Colors.grey,
+                        color: Colors.purple.shade400,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       height: 90,
@@ -123,6 +122,7 @@ class _ToDoViewState extends State<ToDoView> {
                                   docs?[index]['title'],
                                   style: GoogleFonts.roboto(
                                     fontSize: 18,
+                                    color: Colors.purple.shade100,
                                   ),
                                 ),
                               ),
@@ -135,16 +135,44 @@ class _ToDoViewState extends State<ToDoView> {
                                   DateFormat.yMd().add_jm().format(time),
                                   style: GoogleFonts.roboto(
                                     fontSize: 18,
+                                    color: Colors.purple.shade100,
                                   ),
                                 ),
                               ),
                             ],
                           ),
                           Container(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                unselectedWidgetColor: Colors.purple.shade100,
+                              ),
+                              child: Checkbox(
+                                value:
+                                    false, // Replace with your checkbox value
+                                onChanged: (bool? newValue) {
+                                  // Handle checkbox value change
+                                },
+                                checkColor: Colors.white,
+                                activeColor: Colors.purple.shade300,
+                              ),
+                            ),
+                          ),
+                          Container(
                             child: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
+                                Icons.edit,
+                                color: Colors.purple.shade100,
+                              ),
+                              onPressed: () {
+                                // Add your edit functionality here
+                              },
+                            ),
+                          ),
+                          Container(
+                            child: IconButton(
+                              icon: Icon(
                                 Icons.delete,
-                                // color: Colors.white,
+                                color: Colors.purple.shade100,
                               ),
                               onPressed: () async {
                                 FirebaseFirestore.instance
