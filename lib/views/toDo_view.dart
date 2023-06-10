@@ -157,17 +157,17 @@ class _ToDoViewState extends State<ToDoView> {
                               ),
                             ),
                           ),
-                          Container(
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.edit,
-                                color: Colors.purple.shade100,
-                              ),
-                              onPressed: () {
-                                // Add your edit functionality here
-                              },
-                            ),
-                          ),
+                          // Container(
+                          //   child: IconButton(
+                          //     icon: Icon(
+                          //       Icons.edit,
+                          //       color: Colors.purple.shade100,
+                          //     ),
+                          //     onPressed: () {
+                          //       // Add your edit functionality here
+                          //     },
+                          //   ),
+                          // ),
                           Container(
                             child: IconButton(
                               icon: Icon(

@@ -36,6 +36,13 @@ class ShowTask extends StatelessWidget {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(
+          Icons.edit,
+          // color: Colors.white,
+        ),
+        onPressed: () {},
+      ),
     );
   }
 }
