@@ -24,6 +24,7 @@ void main() {
         toDoRoute: (context) => const ToDoView(),
         verifyEmailRoute: (context) => const VerifyEmailView(),
         addTaskRoute: (context) => const AddTask(),
+        homePageRoute: (context) => const HomePage(),
       },
     ),
   );

@@ -30,8 +30,7 @@ class ShowTask extends StatelessWidget {
             child: Text(
               details,
               style: GoogleFonts.roboto(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+                fontSize: 20,
               ),
             ),
           ),
