@@ -1,9 +1,8 @@
-// ignore_for_file: file_names, avoid_unnecessary_containers
+// ignore_for_file: file_names, avoid_unnecessary_containers, use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:todo/constants/routes.dart';
@@ -23,19 +22,16 @@ class ToDoView extends StatefulWidget {
 
 class _ToDoViewState extends State<ToDoView> {
   String? userId = '';
-  String? userName = '';
 
   @override
   void initState() {
     getUid();
-    // Fluttertoast.showToast(msg: userName.toString());
-    Fluttertoast.showToast(msg: userId.toString());
+    // Fluttertoast.showToast(msg: userId.toString());
     super.initState();
   }
 
   getUid() async {
     final user = FirebaseAuth.instance.currentUser;
-    // final userName = user?.email;
     setState(() {
       userId = user?.uid;
     });
@@ -130,7 +126,7 @@ class _ToDoViewState extends State<ToDoView> {
                                   ),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 5,
                               ),
                               Container(
