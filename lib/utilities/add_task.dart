@@ -1,11 +1,8 @@
-// ignore_for_file: avoid_unnecessary_containers, sized_box_for_whitespace
+// ignore_for_file: sized_box_for_whitespace
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class AddTask extends StatefulWidget {
@@ -46,25 +43,21 @@ class _AddTaskState extends State<AddTask> {
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            Container(
-              child: TextField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  hintText: 'Enter the title',
-                  border: OutlineInputBorder(),
-                ),
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(
+                labelText: 'Title',
+                hintText: 'Enter the title',
+                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
-            Container(
-              child: TextField(
-                controller: taskController,
-                decoration: const InputDecoration(
-                  labelText: 'Task',
-                  hintText: 'Describe',
-                  border: OutlineInputBorder(),
-                ),
+            TextField(
+              controller: taskController,
+              decoration: const InputDecoration(
+                labelText: 'Task',
+                hintText: 'Describe',
+                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
