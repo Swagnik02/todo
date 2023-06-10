@@ -4,8 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:todo/constants/routes.dart';
 import 'package:todo/utilities/add_task.dart';
+
+import '../utilities/logout_dialogue.dart.dart';
 
 enum MenuAction { logout }
 
@@ -18,16 +21,19 @@ class ToDoView extends StatefulWidget {
 
 class _ToDoViewState extends State<ToDoView> {
   String? userId = '';
+  String? userName = '';
 
   @override
   void initState() {
     getUid();
+    // Fluttertoast.showToast(msg: userName.toString());
     Fluttertoast.showToast(msg: userId.toString());
     super.initState();
   }
 
   getUid() async {
     final user = FirebaseAuth.instance.currentUser;
+    // final userName = user?.email;
     setState(() {
       userId = user?.uid;
     });
@@ -65,9 +71,10 @@ class _ToDoViewState extends State<ToDoView> {
         ],
       ),
       body: Container(
+        padding: const EdgeInsets.all(10),
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        color: Colors.red,
+        // color: Colors.red,
         child: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('task')
@@ -76,8 +83,8 @@ class _ToDoViewState extends State<ToDoView> {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container(
-                child: const CircularProgressIndicator(),
+              return const Center(
+                child: CircularProgressIndicator(),
               );
             } else {
               final docs = snapshot.data?.docs;
@@ -85,9 +92,46 @@ class _ToDoViewState extends State<ToDoView> {
                 itemCount: docs?.length,
                 itemBuilder: (context, index) {
                   return Container(
-                    child: Column(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    height: 90,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(docs![index]['title']),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(left: 20),
+                              child: Text(
+                                docs![index]['title'],
+                                style: GoogleFonts.roboto(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.delete,
+                              // color: Colors.white,
+                            ),
+                            onPressed: () async {
+                              FirebaseFirestore.instance
+                                  .collection('task')
+                                  .doc(userId)
+                                  .collection('myTasks')
+                                  .doc(docs[index]['time'])
+                                  .delete();
+                            },
+                          ),
+                        )
                       ],
                     ),
                   );
@@ -100,7 +144,7 @@ class _ToDoViewState extends State<ToDoView> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(
           Icons.add,
-          color: Colors.white,
+          // color: Colors.white,
         ),
         onPressed: () {
           Navigator.push(
@@ -113,30 +157,4 @@ class _ToDoViewState extends State<ToDoView> {
       ),
     );
   }
-}
-
-Future<bool> showLogOutDialogue(BuildContext context) {
-  return showDialog<bool>(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Sign out'),
-        content: const Text('Are you sure ?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-            child: const Text('Log Out'),
-          ),
-        ],
-      );
-    },
-  ).then((value) => value ?? false);
 }
