@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:todo/constants/routes.dart';
 import 'package:todo/utilities/add_task.dart';
+import 'package:todo/utilities/show_task.dart';
 
 import '../utilities/logout_dialogue.dart.dart';
 
@@ -96,10 +97,15 @@ class _ToDoViewState extends State<ToDoView> {
 
                   return InkWell(
                     onTap: () {
-
-
-
-                      
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ShowTask(
+                            title: docs?[index]['title'],
+                            details: docs?[index]['task'],
+                          ),
+                        ),
+                      );
                     },
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 10),
