@@ -1,5 +1,3 @@
-// ignore_for_file: file_names, avoid_unnecessary_containers, use_build_context_synchronously
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +8,7 @@ import 'package:todo/views/addTask_view.dart';
 import 'package:todo/views/showTask_view.dart';
 
 import '../utilities/logout_dialogue.dart.dart';
+import '../components/sidebar.dart';
 
 enum MenuAction { logout }
 
@@ -89,6 +88,15 @@ class _ToDoViewState extends State<ToDoView> {
             },
           )
         ],
+      ),
+      drawer: Sidebar(
+        username: 'John Doe',
+        profileIcon: Icons.person,
+        categories: ['All', 'Category 1', 'Category 2'],
+        selectedCategory: 'All',
+        onCategoryChanged: (category) {
+          // Handle category change
+        },
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
