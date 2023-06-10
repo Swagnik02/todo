@@ -19,6 +19,7 @@ class _AddTaskState extends State<AddTask> {
   addTaskToFirebase() async {
     final user = FirebaseAuth.instance.currentUser;
     var time = DateTime.now();
+
     await FirebaseFirestore.instance
         .collection('task')
         .doc(user?.uid)
