@@ -25,6 +25,15 @@ class _ToDoViewState extends State<ToDoView> {
   String? userId = '';
   String? searchQuery = '';
   List<String> categories = [];
+  String? username = '';
+
+  fetchUsername() async {
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    setState(() {
+      username = userDoc['username'];
+    });
+  }
 
   @override
   void initState() {
@@ -38,6 +47,7 @@ class _ToDoViewState extends State<ToDoView> {
     setState(() {
       userId = user?.uid;
     });
+    fetchUsername();
   }
 
   fetchCategories() async {
@@ -108,7 +118,7 @@ class _ToDoViewState extends State<ToDoView> {
         ],
       ),
       drawer: Sidebar(
-        username: 'John Doe',
+        username: username ?? '',
         profileIcon: Icons.person,
         categories: ['All', ...categories],
         selectedCategory: 'All',

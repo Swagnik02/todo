@@ -2,6 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/constants/routes.dart';
+import 'package:todo/utilities/cat2_View.dart';
+import 'package:todo/utilities/cat3_View.dart';
+import 'package:todo/utilities/cat_View.dart';
 import 'package:todo/views/addTask_view.dart';
 import 'package:todo/views/login_view.dart';
 import 'package:todo/views/register_view.dart';
@@ -25,6 +28,9 @@ void main() {
         verifyEmailRoute: (context) => const VerifyEmailView(),
         addTaskRoute: (context) => const AddTask(),
         homePageRoute: (context) => const HomePage(),
+        catViewRoute: (context) => const CatView(),
+        cat2ViewRoute: (context) => const Cat2View(),
+        cat3ViewRoute: (context) => const Cat3View(),
       },
     ),
   );

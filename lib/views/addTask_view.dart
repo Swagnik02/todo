@@ -38,6 +38,17 @@ class _AddTaskState extends State<AddTask> {
       'isChecked': false, // Add isChecked field with default value
     });
 
+    DocumentReference catRef = FirebaseFirestore.instance
+        .collection('cat')
+        .doc(user?.uid)
+        .collection('mycats')
+        .doc();
+
+    await catRef.set({
+      'catName': categoryController.text,
+      'timestamp': time,
+    });
+
     Fluttertoast.showToast(msg: 'Task Added!!');
     Navigator.pop(context); // Close the AddTask screen after adding the task
   }

@@ -25,6 +25,7 @@ class ShowTask extends StatefulWidget {
 class _ShowTaskState extends State<ShowTask> {
   bool _isEditing = false;
   late TextEditingController _detailsController;
+  List<String> _selectedCategories = [];
 
   @override
   void initState() {
