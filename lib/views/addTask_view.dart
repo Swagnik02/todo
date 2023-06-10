@@ -15,6 +15,7 @@ class AddTask extends StatefulWidget {
 class _AddTaskState extends State<AddTask> {
   TextEditingController titleController = TextEditingController();
   TextEditingController taskController = TextEditingController();
+  TextEditingController categoryController = TextEditingController();
 
   void addTaskToFirebase() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -32,6 +33,7 @@ class _AddTaskState extends State<AddTask> {
       'taskID': taskID,
       'title': titleController.text,
       'task': taskController.text,
+      'category': categoryController.text,
       'timestamp': time,
       'isChecked': false, // Add isChecked field with default value
     });
@@ -68,6 +70,15 @@ class _AddTaskState extends State<AddTask> {
               ),
             ),
             const SizedBox(height: 10),
+            TextField(
+              controller: categoryController,
+              decoration: const InputDecoration(
+                labelText: 'Category',
+                hintText: 'Enter the category',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
             Container(
               width: double.infinity,
               height: 50,
@@ -82,9 +93,7 @@ class _AddTaskState extends State<AddTask> {
                     },
                   ),
                 ),
-                child: const Text(
-                  'Add Task',
-                ),
+                child: const Text('Add Task'),
                 onPressed: () {
                   addTaskToFirebase();
                 },

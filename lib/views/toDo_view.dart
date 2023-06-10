@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +24,12 @@ class ToDoView extends StatefulWidget {
 class _ToDoViewState extends State<ToDoView> {
   String? userId = '';
   String? searchQuery = '';
+  List<String> categories = [];
 
   @override
   void initState() {
     getUid();
+    fetchCategories();
     super.initState();
   }
 
@@ -34,6 +38,20 @@ class _ToDoViewState extends State<ToDoView> {
     setState(() {
       userId = user?.uid;
     });
+  }
+
+  fetchCategories() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final snapshot = await FirebaseFirestore.instance
+        .collection('categories')
+        .doc(user?.uid)
+        .get();
+    final data = snapshot.data();
+    if (data != null) {
+      setState(() {
+        categories = List<String>.from(data['categories']);
+      });
+    }
   }
 
   void updateSearchQuery(String query) {
@@ -92,7 +110,7 @@ class _ToDoViewState extends State<ToDoView> {
       drawer: Sidebar(
         username: 'John Doe',
         profileIcon: Icons.person,
-        categories: ['All', 'Category 1', 'Category 2'],
+        categories: ['All', ...categories],
         selectedCategory: 'All',
         onCategoryChanged: (category) {
           // Handle category change
@@ -135,6 +153,7 @@ class _ToDoViewState extends State<ToDoView> {
                                   (doc['timestamp'] as Timestamp).toDate(),
                               taskId: doc.id,
                               isChecked: doc['isChecked'] ?? false,
+                              category: doc['category'],
                             ))
                         .toList();
                     return ListView.builder(
@@ -168,6 +187,45 @@ class _ToDoViewState extends State<ToDoView> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(left: 20),
+                                      child: Row(
+                                        children: [
+                                          ...task?.category
+                                                  .split(',')
+                                                  .map(
+                                                    (category) => Container(
+                                                      margin:
+                                                          const EdgeInsets.only(
+                                                              right: 5),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              4),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors
+                                                            .purple.shade200,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                      child: Text(
+                                                        category.trim(),
+                                                        style:
+                                                            GoogleFonts.roboto(
+                                                          fontSize: 12,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                  .toList() ??
+                                              [],
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
                                     Container(
                                       margin: const EdgeInsets.only(left: 20),
                                       child: Text(
@@ -279,6 +337,7 @@ class _TaskItem {
   final DateTime timestamp;
   final String taskId;
   bool isChecked;
+  final String category;
 
   _TaskItem({
     required this.title,
@@ -286,5 +345,6 @@ class _TaskItem {
     required this.timestamp,
     required this.taskId,
     required this.isChecked,
+    required this.category,
   });
 }
