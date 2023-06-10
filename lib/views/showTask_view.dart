@@ -2,7 +2,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,8 +9,13 @@ import 'package:google_fonts/google_fonts.dart';
 class ShowTask extends StatefulWidget {
   final String title;
   final String details;
+  final String taskId; // Add the taskId property
 
-  const ShowTask({Key? key, required this.title, required this.details})
+  const ShowTask(
+      {Key? key,
+      required this.title,
+      required this.details,
+      required this.taskId})
       : super(key: key);
 
   @override
@@ -41,11 +45,20 @@ class _ShowTaskState extends State<ShowTask> {
   }
 
   Future<void> _saveChanges() async {
-// DocumentReference docRef =
-
     // Push the updated task details to Firebase
     String updatedDetails = _detailsController.text;
-    // Add your Firebase update logic here
+    final user = FirebaseAuth.instance.currentUser;
+    var time = DateTime.now();
+    await FirebaseFirestore.instance
+        .collection('task')
+        .doc(user?.uid)
+        .collection('myTasks')
+        .doc(widget.taskId) // Use the taskId to update the specific document
+        .update({
+      'task': updatedDetails,
+      'time': time.toString(),
+      'timestamp': time,
+    });
     Fluttertoast.showToast(msg: 'Task updated!!');
     _toggleEdit(); // Switch back to non-edit mode after saving changes
   }

@@ -14,7 +14,7 @@ import '../utilities/logout_dialogue.dart.dart';
 enum MenuAction { logout }
 
 class ToDoView extends StatefulWidget {
-  const ToDoView({super.key});
+  const ToDoView({Key? key}) : super(key: key);
 
   @override
   State<ToDoView> createState() => _ToDoViewState();
@@ -26,7 +26,6 @@ class _ToDoViewState extends State<ToDoView> {
   @override
   void initState() {
     getUid();
-    // Fluttertoast.showToast(msg: userId.toString());
     super.initState();
   }
 
@@ -90,6 +89,7 @@ class _ToDoViewState extends State<ToDoView> {
                 itemCount: docs?.length,
                 itemBuilder: (context, index) {
                   var time = (docs?[index]['timestamp'] as Timestamp).toDate();
+                  var taskId = docs?[index].id; // Unique ID of the document
                   return InkWell(
                     onTap: () {
                       Navigator.push(
@@ -98,6 +98,7 @@ class _ToDoViewState extends State<ToDoView> {
                           builder: (context) => ShowTask(
                             title: docs?[index]['title'],
                             details: docs?[index]['task'],
+                            taskId: docs?[index]['taskID'],
                           ),
                         ),
                       );
@@ -157,17 +158,6 @@ class _ToDoViewState extends State<ToDoView> {
                               ),
                             ),
                           ),
-                          // Container(
-                          //   child: IconButton(
-                          //     icon: Icon(
-                          //       Icons.edit,
-                          //       color: Colors.purple.shade100,
-                          //     ),
-                          //     onPressed: () {
-                          //       // Add your edit functionality here
-                          //     },
-                          //   ),
-                          // ),
                           Container(
                             child: IconButton(
                               icon: Icon(
@@ -179,7 +169,8 @@ class _ToDoViewState extends State<ToDoView> {
                                     .collection('task')
                                     .doc(userId)
                                     .collection('myTasks')
-                                    .doc(docs?[index]['time'])
+                                    .doc(
+                                        taskId) // Use the unique ID to delete the document
                                     .delete();
                               },
                             ),

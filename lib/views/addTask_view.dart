@@ -18,19 +18,24 @@ class _AddTaskState extends State<AddTask> {
 
   addTaskToFirebase() async {
     final user = FirebaseAuth.instance.currentUser;
-    var time = DateTime.now();
 
-    await FirebaseFirestore.instance
+    // Generate a unique ID for the document
+    DocumentReference docRef = FirebaseFirestore.instance
         .collection('task')
         .doc(user?.uid)
         .collection('myTasks')
-        .doc(time.toString())
-        .set({
+        .doc();
+    String taskID = docRef.id;
+    var time = DateTime.now();
+
+    await docRef.set({
+      'taskID': taskID,
       'title': titleController.text,
       'task': taskController.text,
-      'time': time.toString(),
+      'time': docRef.id,
       'timestamp': time,
     });
+
     Fluttertoast.showToast(msg: 'Task Added!!');
   }
 
